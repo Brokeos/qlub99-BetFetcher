@@ -1,6 +1,6 @@
 const FlashScoreProvider = require("./providers/FlashScoreProvider");
 const { analyzeMatches } = require("./utils");
-const Sports = require("./repository/sports.entity")
+const Sport = require("./repository/sport.entity")
 const League = require("./repository/league.entity");
 
 async function main() {
@@ -20,12 +20,12 @@ async function main() {
 	
 	await Promise.all(
 		matchesData.sports.map(async (sport) => {
-			if (!(await Sports.exists(sport))) {
-				sport = await Sports.add(sport);
+			if (!(await Sport.exists(sport))) {
+				sport = await Sport.add(sport);
 				
 				console.log(`New sport added: ${sport.name}`);
 			} else {
-				sport = await Sports.getByName(sport);
+				sport = await Sport.getByName(sport);
 			}
 			
 			console.log(sport);

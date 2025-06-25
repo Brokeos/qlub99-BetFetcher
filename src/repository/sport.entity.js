@@ -1,7 +1,7 @@
-const { get, add, exists, getAll, getByName} = require('./sports.database');
+const { get, add, exists, getAll, getByName} = require('./sport.database');
 const cacheService = require('../services/cache.service');
 
-class Sports {
+class Sport {
 	static CACHE_TTL = 60 * 60 * 24 * 7 * 1000; // 7 days
 	static ENTITY_NAME = 'sports';
 	
@@ -15,13 +15,13 @@ class Sports {
 		const cachedSport = await cacheService.get(cacheKey);
 		
 		if (cachedSport) {
-			return new Sports(cachedSport.id, cachedSport.name);
+			return new Sport(cachedSport.id, cachedSport.name);
 		}
 		
 		const result = await get(id);
 		
 		if (result) {
-			const sport = new Sports(result.id, result.name);
+			const sport = new Sport(result.id, result.name);
 			
 			await cacheService.set(cacheKey, sport, this.CACHE_TTL);
 			
@@ -37,7 +37,7 @@ class Sports {
 		}
 		
 		const result = await add(name);
-		const sport = new Sports(result.id, result.name);
+		const sport = new Sport(result.id, result.name);
 		const cacheKey = cacheService.generateKey(this.ENTITY_NAME, result.id);
 		
 		await cacheService.set(cacheKey, sport, this.CACHE_TTL);
@@ -76,13 +76,13 @@ class Sports {
 		const cachedSport = await cacheService.get(cacheKey);
 		
 		if (cachedSport) {
-			return new Sports(cachedSport.id, cachedSport.name);
+			return new Sport(cachedSport.id, cachedSport.name);
 		}
 		
 		const result = await getByName(name);
 		
 		if (result) {
-			const sport = new Sports(result.id, result.name);
+			const sport = new Sport(result.id, result.name);
 			
 			await cacheService.set(cacheKey, sport, this.CACHE_TTL);
 			
@@ -96,11 +96,11 @@ class Sports {
 		const cachedSports = await cacheService.getAll(this.ENTITY_NAME);
 		
 		if (cachedSports) {
-			return cachedSports.map(sport => new Sports(sport.id, sport.name));
+			return cachedSports.map(sport => new Sport(sport.id, sport.name));
 		}
 		
 		const results = await getAll();
-		const sportsList = results.map(result => new Sports(result.id, result.name));
+		const sportsList = results.map(result => new Sport(result.id, result.name));
 		const cachePromises = sportsList.map(sport => {
 			const cacheKey = cacheService.generateKey(this.ENTITY_NAME, sport.id);
 			
@@ -113,4 +113,4 @@ class Sports {
 	}
 }
 
-module.exports = Sports;
+module.exports = Sport;

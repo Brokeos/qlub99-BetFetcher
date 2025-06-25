@@ -1,6 +1,6 @@
 const { get, add, exists, getByNameAndSport, getAll } = require('./league.database.js');
 const cacheService = require('../services/cache.service.js');
-const Sports = require('./sports.entity.js');
+const Sport = require('./sport.entity.js');
 
 class League {
 	static CACHE_TTL = 60 * 60 * 24 * 7 * 1000; // 7 days
@@ -36,7 +36,7 @@ class League {
 			return this.getByNameAndSport(name, sport_name);
 		}
 		
-		const sport = await Sports.getByName(sport_name);
+		const sport = await Sport.getByName(sport_name);
 		
 		if (!sport) {
 			throw new Error(`Sport with name ${sport_name} does not exist.`);
@@ -51,7 +51,7 @@ class League {
 	}
 
 	static async exists(name, sport_name) {
-		const sport = await Sports.getByName(sport_name);
+		const sport = await Sport.getByName(sport_name);
 		
 		if (!sport) {
 			throw new Error(`Sport with name ${sport_name} does not exist.`);
@@ -83,7 +83,7 @@ class League {
 	}
 
 	static async getByNameAndSport(name, sport_name) {
-		const sport = await Sports.getByName(sport_name);
+		const sport = await Sport.getByName(sport_name);
 		
 		if (!sport) {
 			throw new Error(`Sport with name ${sport_name} does not exist.`);
