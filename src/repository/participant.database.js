@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS participants (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)
+);
+
+CREATE UNIQUE INDEX idx_participants_name ON participants (name);
 */
 
 async function get(id){
