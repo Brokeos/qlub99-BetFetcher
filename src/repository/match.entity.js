@@ -1,6 +1,7 @@
 const { get, add, exists, update, getAll } = require('./match.database');
 const cacheService = require('../services/cache.service.js');
 const League = require('./league.entity.js');
+const Participant = require('./participant.entity.js');
 
 class Match {
 	static CACHE_TTL = 60 * 60 * 24 * 7 * 1000; // 7 days
@@ -56,7 +57,7 @@ class Match {
 		return null;
 	}
 	
-	static async add(id, league_name, sport_name, match_date, home_participant_id, away_participant_id, home_score, away_score, status) {
+	static async add(id, league_name, sport_name, match_date, home_participant_name, away_participant_name, home_score, away_score, status) {
 		if (await this.exists(id)){
 			return await this.update(id, match_date, home_score, away_score, status);
 		}
@@ -67,7 +68,19 @@ class Match {
 			throw new Error(`League ${league_name} for sport ${sport_name} does not exist.`);
 		}
 		
-		const result = await add(id, league.id, match_date, home_participant_id, away_participant_id, home_score, away_score, status);
+		const home_participant = await Participant.getByName(home_participant_name);
+		
+		if (!home_participant) {
+			throw new Error(`Home participant ${home_participant_name} does not exist.`);
+		}
+		
+		const away_participant = await Participant.getByName(away_participant_name);
+		
+		if (!away_participant) {
+			throw new Error(`Away participant ${away_participant_name} does not exist.`);
+		}
+		
+		const result = await add(id, league.id, match_date, home_participant.id, away_participant.id, home_score, away_score, status);
 		const match = new Match(
 			result.id,
 			result.league_id,
@@ -108,7 +121,7 @@ class Match {
 		return existsResult;
 	}
 	
-	async static update(id, match_date, home_score, away_score, status) {
+	static async update(id, match_date, home_score, away_score, status) {
 		const cacheKey = cacheService.generateKey(this.ENTITY_NAME, id);
 		const match = await Match.get(id);
 		

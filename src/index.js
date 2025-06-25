@@ -3,6 +3,7 @@ const { analyzeMatches } = require("./utils");
 const Sport = require("./repository/sport.entity")
 const League = require("./repository/league.entity");
 const Participant = require("./repository/participant.entity");
+const Match = require("./repository/match.entity");
 
 async function main() {
 	const provider = new FlashScoreProvider();
@@ -22,7 +23,7 @@ async function main() {
 				sport = await Sport.getByName(sport);
 			}
 			
-			console.log(sport);
+			console.log(sport.name);
 		})
 	);
 	
@@ -36,7 +37,7 @@ async function main() {
 				league = await League.getByNameAndSport(league.name, league.sport);
 			}
 			
-			console.log(league);
+			console.log(league.name);
 		})
 	);
 	
@@ -50,9 +51,23 @@ async function main() {
 				participant = await Participant.getByName(participant);
 			}
 			
-			console.log(participant);
+			console.log(participant.name);
 		})
 	);
+	
+	await Promise.all(
+		matches.map(async (match) => {
+			if (!(await Match.exists(match.id))) {
+				match = await Match.add(match.id, match.league, match.sport, match.date, match.homeParticipant, match.awayParticipant, match.homeScore, match.awayScore, match.status)
+				
+				console.log(`New match added: ${match.id}`);
+			} else {
+				match = await Match.get(match.id);
+			}
+			
+			console.log(match.id);
+		})
+	)
 }
 
 main();
