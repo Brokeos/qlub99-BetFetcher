@@ -30,7 +30,7 @@ async function add(name, sport_id) {
 }
 
 async function exists(name, sport_id) {
-	const query = `SELECT 1 FROM leagues WHERE name = $1 AND sport_id = $2`;
+	const query = `SELECT COUNT(*) FROM leagues WHERE name = $1 AND sport_id = $2`;
 	const result = await database.query(query, [name, sport_id]);
 	
 	return result.rows[0].count > 0;
