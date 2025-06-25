@@ -241,7 +241,7 @@ class FlashScoreProvider extends BaseProvider {
 			
 			const timeElement = element.find('.event__time');
 			const timeText = timeElement.text().trim();
-			const matchDate = this.parseDate(timeText);
+			let matchDate = this.parseDate(timeText);
 			
 			let eventId = null;
 			const matchId = element.attr('id');

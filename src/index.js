@@ -22,8 +22,6 @@ async function main() {
 			} else {
 				sport = await Sport.getByName(sport);
 			}
-			
-			console.log(sport.name);
 		})
 	);
 	
@@ -36,8 +34,6 @@ async function main() {
 			} else {
 				league = await League.getByNameAndSport(league.name, league.sport);
 			}
-			
-			console.log(league.name);
 		})
 	);
 	
@@ -50,8 +46,6 @@ async function main() {
 			} else {
 				participant = await Participant.getByName(participant);
 			}
-			
-			console.log(participant.name);
 		})
 	);
 	
@@ -62,10 +56,24 @@ async function main() {
 				
 				console.log(`New match added: ${match.id}`);
 			} else {
-				match = await Match.get(match.id);
+				const matchDatabase = await Match.get(match.id);
+				const dateMatch = match.date instanceof Date ? match.date.toISOString() : match.date;
+				const dateDB = matchDatabase.match_date instanceof Date ? matchDatabase.match_date.toISOString() : matchDatabase.match_date;
+				
+				if (dateMatch !== dateDB ||
+					match.homeScore !== matchDatabase.home_score ||
+					match.awayScore !== matchDatabase.away_score ||
+					match.status !== matchDatabase.status) {
+					
+					console.log('Differences found, updating match...');
+					console.log(match.date, match.homeScore, match.awayScore, match.status);
+					console.log(matchDatabase.match_date, matchDatabase.home_score, matchDatabase.away_score, matchDatabase.status);
+					
+					match = await Match.update(match.id, match.date, match.homeScore, match.awayScore, match.status);
+					
+					console.log(`Match updated: ${match.id}`);
+				}
 			}
-			
-			console.log(match.id);
 		})
 	)
 }
