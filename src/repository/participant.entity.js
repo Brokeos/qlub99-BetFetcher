@@ -3,7 +3,7 @@ const cacheService = require('../services/cache.service');
 
 class Participant {
 	static CACHE_TTL = 60 * 60 * 24 * 7 * 1000; // 7 days
-	static ENTITY_NAME = 'sports';
+	static ENTITY_NAME = 'participant';
 	
 	constructor(id, name) {
 		this.id = id;
@@ -113,4 +113,4 @@ class Participant {
 	}
 }
 
-module.exports = Sport;
+module.exports = Participant;

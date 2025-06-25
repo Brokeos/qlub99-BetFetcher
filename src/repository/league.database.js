@@ -33,7 +33,7 @@ async function exists(name, sport_id) {
 	const query = `SELECT 1 FROM leagues WHERE name = $1 AND sport_id = $2`;
 	const result = await database.query(query, [name, sport_id]);
 	
-	return result.rowCount > 0;
+	return result.rows[0].count > 0;
 }
 
 async function getByNameAndSport(name, sport_id) {

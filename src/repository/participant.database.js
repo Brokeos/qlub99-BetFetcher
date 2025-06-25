@@ -28,7 +28,7 @@ async function exists(name) {
 	const query = 'SELECT COUNT(*) FROM participants WHERE name LIKE $1';
 	const result = await database.query(query, [name]);
 	
-	return result.rowCount > 0;
+	return result.rows[0].count > 0;
 }
 
 async function getByName(name) {

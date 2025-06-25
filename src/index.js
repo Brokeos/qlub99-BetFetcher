@@ -2,21 +2,15 @@ const FlashScoreProvider = require("./providers/FlashScoreProvider");
 const { analyzeMatches } = require("./utils");
 const Sport = require("./repository/sport.entity")
 const League = require("./repository/league.entity");
+const Participant = require("./repository/participant.entity");
 
 async function main() {
-	/*const provider = new FlashScoreProvider();
+	const provider = new FlashScoreProvider();
 	
 	await provider.initialize();
 	
 	const matches = await provider.fetchMatchs();
-	const matchesData = analyzeMatches(matches);*/
-	
-	const matchesData = {
-		sports: ["Football", "Basketball", "Tennis"],
-		leagues: [{
-			"name": "Wimbledon", "sport": "Tennis",
-		}]
-	}
+	const matchesData = analyzeMatches(matches);
 	
 	await Promise.all(
 		matchesData.sports.map(async (sport) => {
@@ -43,6 +37,20 @@ async function main() {
 			}
 			
 			console.log(league);
+		})
+	);
+	
+	await Promise.all(
+		matchesData.participants.map(async (participant) => {
+			if (!(await Participant.exists(participant))) {
+				participant = await Participant.add(participant);
+				
+				console.log(`New participant added: ${participant.name}`);
+			} else {
+				participant = await Participant.getByName(participant);
+			}
+			
+			console.log(participant);
 		})
 	);
 }
