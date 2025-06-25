@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      PG_HOSTNAME: ${PG_HOSTNAME}
+      PG_PORT: ${PG_PORT}
+      PG_USERNAME: ${PG_USERNAME}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DATABASE: ${PG_DATABASE}
+      REDIS_HOSTNAME: ${REDIS_HOSTNAME}
+      REDIS_PORT: ${REDIS_PORT}
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+      - /app/node_modules
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DATABASE}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
