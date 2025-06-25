@@ -1,7 +1,7 @@
 const FlashScoreProvider = require("./providers/FlashScoreProvider");
 const { analyzeMatches } = require("./utils");
 const Sports = require("./repository/sports.entity")
-const Leagues = require("./repository/leagues.entity");
+const League = require("./repository/league.entity");
 
 async function main() {
 	/*const provider = new FlashScoreProvider();
@@ -34,17 +34,17 @@ async function main() {
 	
 	await Promise.all(
 		matchesData.leagues.map(async (league) => {
-			if (!(await Leagues.exists(league.name, league.sport))) {
-				league = await Leagues.add(league.name, league.sport);
+			if (!(await League.exists(league.name, league.sport))) {
+				league = await League.add(league.name, league.sport);
 				
 				console.log(`New league added: ${league.name}`);
 			} else {
-				league = await Leagues.getByNameAndSport(league.name, league.sport);
+				league = await League.getByNameAndSport(league.name, league.sport);
 			}
 			
 			console.log(league);
 		})
-	)
+	);
 }
 
 main();

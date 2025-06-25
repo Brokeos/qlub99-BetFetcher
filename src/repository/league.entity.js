@@ -1,8 +1,8 @@
-const { get, add, exists, getByNameAndSport, getAll } = require('./leagues.database.js');
+const { get, add, exists, getByNameAndSport, getAll } = require('./league.database.js');
 const cacheService = require('../services/cache.service.js');
 const Sports = require('./sports.entity.js');
 
-class Leagues {
+class League {
 	static CACHE_TTL = 60 * 60 * 24 * 7 * 1000; // 7 days
 	static ENTITY_NAME = 'leagues';
 
@@ -17,13 +17,13 @@ class Leagues {
 		const cachedLeague = await cacheService.get(cacheKey);
 
 		if (cachedLeague) {
-			return new Leagues(cachedLeague.id, cachedLeague.name, cachedLeague.sport_id);
+			return new League(cachedLeague.id, cachedLeague.name, cachedLeague.sport_id);
 		}
 
 		const result = await get(id);
 
 		if (result) {
-			const league = new Leagues(result.id, result.name, result.sport_id);
+			const league = new League(result.id, result.name, result.sport_id);
 			await cacheService.set(cacheKey, league, this.CACHE_TTL);
 			return league;
 		}
@@ -43,7 +43,7 @@ class Leagues {
 		}
 		
 		const result = await add(name, sport.id);
-		const league = new Leagues(result.id, result.name, result.sport_id);
+		const league = new League(result.id, result.name, result.sport_id);
 		const cacheKey = cacheService.generateKey(this.ENTITY_NAME, result.id);
 
 		await cacheService.set(cacheKey, league, this.CACHE_TTL);
@@ -93,13 +93,13 @@ class Leagues {
 		const cachedLeague = await cacheService.get(cacheKey);
 
 		if (cachedLeague) {
-			return new Leagues(cachedLeague.id, cachedLeague.name, cachedLeague.sport_id);
+			return new League(cachedLeague.id, cachedLeague.name, cachedLeague.sport_id);
 		}
 
 		const result = await getByNameAndSport(name, sport.id);
 
 		if (result) {
-			const league = new Leagues(result.id, result.name, result.sport_id);
+			const league = new League(result.id, result.name, result.sport_id);
 			
 			await cacheService.set(cacheKey, league, this.CACHE_TTL);
 			
@@ -113,11 +113,11 @@ class Leagues {
 		const cachedLeagues = await cacheService.getAll(this.ENTITY_NAME);
 
 		if (cachedLeagues) {
-			return cachedLeagues.map(league => new Leagues(league.id, league.name, league.sport_id));
+			return cachedLeagues.map(league => new League(league.id, league.name, league.sport_id));
 		}
 
 		const results = await getAll();
-		const leaguesList = results.map(result => new Leagues(result.id, result.name, result.sport_id));
+		const leaguesList = results.map(result => new League(result.id, result.name, result.sport_id));
 		const cachePromises = leaguesList.map(league => {
 			const cacheKey = cacheService.generateKey(this.ENTITY_NAME, league.id);
 			
@@ -130,4 +130,4 @@ class Leagues {
 	}
 }
 
-module.exports = Leagues;
+module.exports = League;
