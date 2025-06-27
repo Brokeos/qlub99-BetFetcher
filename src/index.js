@@ -183,12 +183,12 @@ async function main() {
 		setInterval(async () => {
 			console.log('Performing hourly static fetch...');
 			await performStaticFetch();
-		}, 60 * 60 * 1000);
+		},60 * 60 * 1000);
 		
 		setInterval(async () => {
 			console.log('Performing 6-hour monitoring restart...');
 			await restartMonitoring();
-		}, 6 * 60 * 60 * 1000);
+		},6 * 60 * 60 * 1000);
 		
 		console.log('Scheduled tasks configured:');
 		console.log('- Static fetch: every 1 hour');

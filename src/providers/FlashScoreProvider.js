@@ -65,7 +65,9 @@ class FlashScoreProvider extends BaseProvider {
 			}
 			
 			this.browser = await puppeteer.launch(launchOptions);
-			this.scrapperPage = await this.browser.newPage();
+			
+			const pages = await this.browser.pages();
+			this.scrapperPage = pages[0];
 			
 			await this.scrapperPage.setUserAgent(this.options.userAgent);
 			await this.scrapperPage.setViewport({width: 1920, height: 1080});
@@ -121,7 +123,9 @@ class FlashScoreProvider extends BaseProvider {
 		if (!this.isMonitoring) {
 			if (this.scrapperPage) {
 				try {
-					await this.scrapperPage.close();
+					if (!this.scrapperPage.isClosed()) {
+						await this.scrapperPage.close();
+					}
 				} catch (error) {
 					console.error(`Error closing scrapper page: ${error.message}`);
 				}
@@ -129,7 +133,9 @@ class FlashScoreProvider extends BaseProvider {
 			
 			if (this.browser){
 				try {
-					await this.browser.close();
+					if (this.browser.isConnected()) {
+						await this.browser.close();
+					}
 				} catch (error) {
 					console.error(`Error closing browser: ${error.message}`);
 				}
@@ -146,7 +152,9 @@ class FlashScoreProvider extends BaseProvider {
 	async cleanup() {
 		if (this.scrapperPage) {
 			try {
-				await this.scrapperPage.close();
+				if (!this.scrapperPage.isClosed()) {
+					await this.scrapperPage.close();
+				}
 			} catch (error) {
 				console.error(`Error closing scrapper page: ${error.message}`);
 			}
@@ -154,7 +162,9 @@ class FlashScoreProvider extends BaseProvider {
 		
 		if (this.browser){
 			try {
-				await this.browser.close();
+				if (this.browser.isConnected()) {
+					await this.browser.close();
+				}
 			} catch (error) {
 				console.error(`Error closing browser: ${error.message}`);
 			}
@@ -395,6 +405,54 @@ class FlashScoreProvider extends BaseProvider {
 				...(scheduledMatch && { date: scheduledMatch.date })
 			};
 		});
+	}
+	
+	async getLeaguesWithTodayMatches() {
+		if (!this.isInitialized) {
+			throw new Error('FlashScoreProvider is not initialized. Please call initialize() first.');
+		}
+		
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		
+		const leaguesWithMatches = [];
+		
+		try {
+			for (const sportConfig of this.sportsConfig) {
+				try {
+					const liveMatches = await this.fetchSportData(sportConfig, 'live');
+					const fixturesMatches = await this.fetchSportData(sportConfig, 'fixtures');
+					
+					const allMatches = [...liveMatches, ...fixturesMatches];
+					
+					const matchesToday = allMatches.filter(match => {
+						if (!match.date) return false;
+						const matchDate = new Date(match.date);
+						matchDate.setHours(0, 0, 0, 0);
+						return matchDate.getTime() === today.getTime();
+					});
+					
+					if (matchesToday.length > 0) {
+						leaguesWithMatches.push({
+							config: sportConfig,
+							matchesCount: matchesToday.length
+						});
+						console.log(`${sportConfig.name}: ${matchesToday.length} matches today`);
+					}
+				} catch (error) {
+					console.error(`Error checking today matches for ${sportConfig.name}: ${error.message}`);
+				}
+			}
+		} catch (error) {
+			console.error(`Error checking leagues with today matches: ${error.message}`);
+		}
+		
+		return leaguesWithMatches;
+	}
+
+	async shouldMonitor() {
+		const leaguesWithMatches = await this.getLeaguesWithTodayMatches();
+		return leaguesWithMatches.length > 0;
 	}
 }
 
