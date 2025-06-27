@@ -13,12 +13,32 @@ class FlashScoreProvider extends BaseProvider {
 			league: 'Wimbledon',
 			sport: 'Tennis',
 			baseUrl: 'https://www.flashscore.com/tennis/atp-singles/wimbledon'
-		}/*,{
+		},{
 			name: 'Tennis - Wimbledon 2025 - WTA Singles',
 			league: 'Wimbledon',
 			sport: 'Tennis',
 			baseUrl: 'https://www.flashscore.com/tennis/wta-singles/wimbledon'
-		}*/]);
+		},{
+			name: 'Football - Premier League 2025/2026',
+			league: 'Premier League',
+			sport: 'Football',
+			baseUrl: 'https://www.flashscore.com/football/england/premier-league'
+		},{
+			name: 'Football - Ligue 1 2025/2026',
+			league: 'Ligue 1',
+			sport: 'Football',
+			baseUrl: 'https://www.flashscore.com/football/france/ligue-1'
+		},{
+			name: 'Football - LaLiga 2025/2026',
+			league: 'LaLiga',
+			sport: 'Football',
+			baseUrl: 'https://www.flashscore.com/football/spain/laliga'
+		},{
+			name: 'Basketball - NBA 2025/2026',
+			league: 'NBA',
+			sport: 'Basketball',
+			baseUrl: 'https://www.flashscore.com/basketball/usa/nba'
+		}]);
 	}
 	
 	normalizeSportsConfig(sportsConfig) {

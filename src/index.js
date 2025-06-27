@@ -57,19 +57,12 @@ async function main() {
 				console.log(`New match added: ${match.id}`);
 			} else {
 				const matchDatabase = await Match.get(match.id);
-				const dateMatch = match.date instanceof Date ? match.date.toISOString() : match.date;
-				const dateDB = matchDatabase.match_date instanceof Date ? matchDatabase.match_date.toISOString() : matchDatabase.match_date;
 				
-				if (dateMatch !== dateDB ||
-					match.homeScore !== matchDatabase.home_score ||
+				if (match.homeScore !== matchDatabase.home_score ||
 					match.awayScore !== matchDatabase.away_score ||
 					match.status !== matchDatabase.status) {
 					
-					console.log('Differences found, updating match...');
-					console.log(match.date, match.homeScore, match.awayScore, match.status);
-					console.log(matchDatabase.match_date, matchDatabase.home_score, matchDatabase.away_score, matchDatabase.status);
-					
-					match = await Match.update(match.id, match.date, match.homeScore, match.awayScore, match.status);
+					match = await Match.update(match.id, null, match.homeScore, match.awayScore, match.status);
 					
 					console.log(`Match updated: ${match.id}`);
 				}
