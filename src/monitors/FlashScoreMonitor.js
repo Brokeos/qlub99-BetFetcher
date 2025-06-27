@@ -1,4 +1,5 @@
 const BaseMonitor = require('./BaseMonitor');
+const Match = require('../repository/match.entity');
 
 class FlashScoreMonitor extends BaseMonitor {
     constructor(provider, options = {}) {
@@ -13,7 +14,7 @@ class FlashScoreMonitor extends BaseMonitor {
     
     async startMonitoring() {
         try {
-            const leaguesWithMatches = await this.provider.getLeaguesWithTodayMatches();
+            const leaguesWithMatches = await Match.getLeaguesWithTodayMatches();
             
             if (leaguesWithMatches.length === 0) {
                 console.log('No matches scheduled for today, monitoring not necessary');
@@ -23,8 +24,8 @@ class FlashScoreMonitor extends BaseMonitor {
             }
             
             this.sportConfigs = leaguesWithMatches
-                .map(league => league.config)
-                .filter(config => config.liveUrl);
+                .map(league => this.provider.sportsConfig.find(config => config.name === league.name))
+                .filter(config => config && config.liveUrl);
             
             if (this.sportConfigs.length === 0) {
                 throw new Error('No live URLs found in sport configurations with matches today');
@@ -59,8 +60,8 @@ class FlashScoreMonitor extends BaseMonitor {
     startMonitoringCheck() {
         this.monitoringCheckInterval = setInterval(async () => {
             try {
-                const leaguesWithMatches = await this.provider.getLeaguesWithTodayMatches();
-                const activeLeagues = leaguesWithMatches.map(l => l.config.name);
+                const leaguesWithMatches = await Match.getLeaguesWithTodayMatches();
+                const activeLeagues = leaguesWithMatches.map(l => l.name);
                 const currentLeagues = this.sportConfigs.map(c => c.name);
                 
                 const leaguesToStop = currentLeagues.filter(league => !activeLeagues.includes(league));

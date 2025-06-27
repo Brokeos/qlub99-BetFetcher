@@ -1,4 +1,4 @@
-const { get, add, exists, update, getAll } = require('./match.database');
+const { get, add, exists, update, getAll, getTodayMatches, getLeaguesWithTodayMatches } = require('./match.database');
 const cacheService = require('../services/cache.service.js');
 const League = require('./league.entity.js');
 const Participant = require('./participant.entity.js');
@@ -158,6 +158,35 @@ class Match {
 		}
 		
 		return null;
+	}
+	
+	static async getTodayMatches() {
+		const results = await getTodayMatches();
+		
+		return results.map(result => ({
+			match: new Match(
+				result.id,
+				result.league_id,
+				result.match_date,
+				result.home_participant_id,
+				result.away_participant_id,
+				result.home_score,
+				result.away_score,
+				result.status
+			),
+			league_name: result.league_name,
+			sport_name: result.sport_name
+		}));
+	}
+	
+	static async getLeaguesWithTodayMatches() {
+		const results = await getLeaguesWithTodayMatches();
+		
+		return results.map(result => ({
+			id: result.id,
+			name: result.name,
+			sport_name: result.sport_name
+		}));
 	}
 }
 

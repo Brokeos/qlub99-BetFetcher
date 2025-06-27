@@ -416,54 +416,6 @@ class FlashScoreProvider extends BaseProvider {
 			};
 		});
 	}
-	
-	async getLeaguesWithTodayMatches() {
-		if (!this.isInitialized) {
-			throw new Error('FlashScoreProvider is not initialized. Please call initialize() first.');
-		}
-		
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-		
-		const leaguesWithMatches = [];
-		
-		try {
-			for (const sportConfig of this.sportsConfig) {
-				try {
-					const liveMatches = await this.fetchSportData(sportConfig, 'live');
-					const fixturesMatches = await this.fetchSportData(sportConfig, 'fixtures');
-					
-					const allMatches = [...liveMatches, ...fixturesMatches];
-					
-					const matchesToday = allMatches.filter(match => {
-						if (!match.date) return false;
-						const matchDate = new Date(match.date);
-						matchDate.setHours(0, 0, 0, 0);
-						return matchDate.getTime() === today.getTime();
-					});
-					
-					if (matchesToday.length > 0) {
-						leaguesWithMatches.push({
-							config: sportConfig,
-							matchesCount: matchesToday.length
-						});
-						console.log(`${sportConfig.name}: ${matchesToday.length} matches today`);
-					}
-				} catch (error) {
-					console.error(`Error checking today matches for ${sportConfig.name}: ${error.message}`);
-				}
-			}
-		} catch (error) {
-			console.error(`Error checking leagues with today matches: ${error.message}`);
-		}
-		
-		return leaguesWithMatches;
-	}
-
-	async shouldMonitor() {
-		const leaguesWithMatches = await this.getLeaguesWithTodayMatches();
-		return leaguesWithMatches.length > 0;
-	}
 }
 
 module.exports = FlashScoreProvider;

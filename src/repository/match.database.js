@@ -28,7 +28,7 @@ FOREIGN KEY (away_participant_id) REFERENCES participants(id) ON DELETE CASCADE;
 */
 
 async function get(id){
-	const query = 'SELECT * FROM sports WHERE id = $1';
+	const query = 'SELECT * FROM matches WHERE id = $1';
 	const result = await database.query(query, [id]);
 	
 	return result.rows[0] || null;
@@ -89,10 +89,37 @@ async function getAll() {
 	return result.rows;
 }
 
+async function getTodayMatches() {
+	const query = `
+		SELECT m.*, l.name as league_name, s.name as sport_name
+		FROM matches m
+		JOIN leagues l ON m.league_id = l.id
+		JOIN sports s ON l.sport_id = s.id
+		WHERE DATE(m.match_date) = CURRENT_DATE
+		ORDER BY m.match_date ASC`;
+	const result = await database.query(query);
+	
+	return result.rows;
+}
+
+async function getLeaguesWithTodayMatches() {
+	const query = `
+		SELECT DISTINCT l.id, l.name, s.name as sport_name
+		FROM matches m
+		JOIN leagues l ON m.league_id = l.id
+		JOIN sports s ON l.sport_id = s.id
+		WHERE DATE(m.match_date) = CURRENT_DATE`;
+	const result = await database.query(query);
+	
+	return result.rows;
+}
+
 module.exports = {
 	get,
 	add,
 	exists,
 	update,
-	getAll
+	getAll,
+	getTodayMatches,
+	getLeaguesWithTodayMatches
 }
