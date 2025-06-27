@@ -337,36 +337,6 @@ class FlashScoreMonitor extends BaseMonitor {
         }
     }
     
-    async refreshAllData() {
-        try {
-            const allMatches = [];
-            
-            const refreshPromises = this.sportConfigs.map(async (sportConfig) => {
-                const page = this.pages.get(sportConfig.name);
-                if (!page) return [];
-                
-                try {
-                    const html = await page.content();
-                    return this.provider.parseMatches(html, sportConfig);
-                } catch (error) {
-                    console.error(`Failed to refresh ${sportConfig.name}: ${error.message}`);
-                    return [];
-                }
-            });
-            
-            const results = await Promise.all(refreshPromises);
-            results.forEach(matches => allMatches.push(...matches));
-            
-            const mergedData = this.provider.mergeMatches(allMatches);
-            await this.handleUpdate(mergedData);
-            
-            console.log(`Refreshed all data, total matches: ${mergedData.length}`);
-        } catch (error) {
-            console.error(`Error refreshing all data: ${error.message}`);
-            this.handleError(error);
-        }
-    }
-    
     async closeAllPages() {
         const closePromises = Array.from(this.pages.values()).map(async (page) => {
             try {

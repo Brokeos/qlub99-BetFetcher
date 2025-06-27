@@ -59,9 +59,36 @@ class FlashScoreProvider extends BaseProvider {
 	
 	async initialize() {
 		try {
-			const launchOptions = {
-				headless: false,
-				args: ['--no-sandbox', '--disable-setuid-sandbox'],
+			let launchOptions = null;
+			if (process.env.ENV === 'prod') {
+				launchOptions = {
+					headless: true,
+					args: [
+						'--no-sandbox',
+						'--disable-setuid-sandbox',
+						'--disable-blink-features=AutomationControlled',
+						'--disable-features=VizDisplayCompositor',
+						'--disable-dev-shm-usage',
+						'--disable-accelerated-2d-canvas',
+						'--no-first-run',
+						'--no-zygote',
+						'--disable-gpu'
+					]
+				}
+			} else {
+				launchOptions = {
+					headless: false,
+					args: [
+						'--no-sandbox',
+						'--disable-setuid-sandbox',
+						'--disable-blink-features=AutomationControlled',
+						'--disable-features=VizDisplayCompositor',
+						'--disable-dev-shm-usage',
+						'--disable-accelerated-2d-canvas',
+						'--no-first-run',
+						'--no-zygote',
+					]
+				}
 			}
 			
 			this.browser = await puppeteer.launch(launchOptions);
