@@ -8,6 +8,7 @@ class FlashScoreProvider extends BaseProvider {
 		
 		this.browser = null;
 		this.scrapperPage = null;
+		this.isMonitoring = false;
 		this.sportsConfig = this.normalizeSportsConfig([{
 			name: 'Tennis - Wimbledon 2025 - ATP Singles',
 			league: 'Wimbledon',
@@ -117,6 +118,32 @@ class FlashScoreProvider extends BaseProvider {
 		
 		console.log(`Fetched ${totalEvents} matches in ${fetchDuration}ms`);
 		
+		if (!this.isMonitoring) {
+			if (this.scrapperPage) {
+				try {
+					await this.scrapperPage.close();
+				} catch (error) {
+					console.error(`Error closing scrapper page: ${error.message}`);
+				}
+			}
+			
+			if (this.browser){
+				try {
+					await this.browser.close();
+				} catch (error) {
+					console.error(`Error closing browser: ${error.message}`);
+				}
+			}
+		}
+		
+		return allEvents;
+	}
+	
+	setMonitoring(isMonitoring) {
+		this.isMonitoring = isMonitoring;
+	}
+	
+	async cleanup() {
 		if (this.scrapperPage) {
 			try {
 				await this.scrapperPage.close();
@@ -132,8 +159,6 @@ class FlashScoreProvider extends BaseProvider {
 				console.error(`Error closing browser: ${error.message}`);
 			}
 		}
-		
-		return allEvents;
 	}
 	
 	async fetchSportData(sportConfig, type) {
