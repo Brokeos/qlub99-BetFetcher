@@ -295,7 +295,7 @@ class FlashScoreProvider extends BaseProvider {
 			}
 			
 			const timeElement = element.find('.event__time');
-			const timeText = timeElement.text().trim();
+			const timeText = this.cleanTimeText($, timeElement);
 			let matchDate = this.parseDate(timeText);
 			
 			let eventId = null;
@@ -345,6 +345,16 @@ class FlashScoreProvider extends BaseProvider {
 		
 		clone.find('.highlightMsg').remove();
 		clone.find('.fontBold').remove();
+
+		return clone.text().trim().replace(/\s+/g, ' ').trim();
+	}
+	
+	cleanTimeText($, element) {
+		if (!element || !element.length) return '';
+		
+		const clone = element.clone();
+		
+		clone.find('.event__stage').remove();
 
 		return clone.text().trim().replace(/\s+/g, ' ').trim();
 	}
